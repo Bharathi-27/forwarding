@@ -5,7 +5,7 @@
 
 /* global Office */
 
-const FORWARD_TO = ["Rakesh.k@albertsons.com"];
+const FORWARD_TO = ["SLT.Customer@albertsons.com"];
 
 Office.onReady(() => {
   // Office.js is ready.
