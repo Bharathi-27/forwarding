@@ -1,19 +1,44 @@
-Office.onReady();
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
+ * See LICENSE in the project root for license information.
+ */
 
-function forwardAsAttachment(event) {
+/* global Office */
+
+const FORWARD_TO = ["Rakesh.k@albertsons.com"];
+
+Office.onReady(() => {
+  // Office.js is ready.
+});
+
+/**
+ * Forwards the current email to Rakesh as an attachment.
+ * @param event {Office.AddinCommands.Event}
+ */
+function action(event) {
   const item = Office.context.mailbox.item;
 
+  if (!item || !item.itemId) {
+    event.completed();
+    return;
+  }
+
   Office.context.mailbox.displayNewMessageForm({
-    toRecipients: ["rakesh.k@albertsons.com"],
-    subject: "Customer Escalation: " + (item.subject || ""),
-    htmlBody: "<p>Forwarding the attached customer escalation for SLT review.</p>",
+    toRecipients: FORWARD_TO,
+    subject: "FW: " + (item.subject || "(no subject)"),
+    htmlBody: "<p>Forwarded to SLT-Care for review & action. Original message attached for ticketing reference.</p>",
     attachments: [
-      // type "item" embeds the ORIGINAL email as an attachment (forward-as-attachment)
-      { type: "item", name: (item.subject || "escalation") + ".eml", itemId: item.itemId }
+      {
+        type: "item",
+        itemId: item.itemId,
+        name: item.subject || "Forwarded message"
+      }
     ]
   });
 
+  // Signal completion so Outlook releases the command.
   event.completed();
 }
 
-Office.actions.associate("forwardAsAttachment", forwardAsAttachment);
+// Register the function with Office.
+Office.actions.associate("action", action);
